@@ -48,7 +48,7 @@
 	    <td><input type='text' name='webRoot' placeholder='htttp://example.com' value='<?php
 	    $url = str_replace('install.php?step=2', '', $_SERVER['REQUEST_URI']);
 	    $url = str_replace('/', '', $url);
-	    $url = str_replace('&msg=' . $_GET['msg'], '', $url);
+	    $url = str_replace('&msg=' . (isset($_GET['msg']) ? $_GET['msg'] : ''), '', $url);
 	    
 	    echo $_SERVER['DOCUMENT_ROOT'] . $url . "/"; ?>' REQUIRED /></td>
 	</tr>
