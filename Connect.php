@@ -5,7 +5,7 @@
 	1 = Installing
 	2 = Closed for use
 */
-$Install = '0';
+$Install = 1;
     
 /* Database connection settings */
 $connect['client'] 	= 'mysql';
