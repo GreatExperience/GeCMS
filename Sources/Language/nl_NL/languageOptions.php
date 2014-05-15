@@ -1,0 +1,3 @@
+<?php
+	$languageDisplay = "Nederlands (Dutch)";
+?>

@@ -1,0 +1,3 @@
+<?php
+	$languageDisplay = "English (English)";
+?>
