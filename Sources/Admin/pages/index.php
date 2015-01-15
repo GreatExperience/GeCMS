@@ -119,6 +119,21 @@
 								<div style='clear:both;'></div>
 							</div>
 						</div>
+					    <?php
+						$totalSpace = disk_total_space("./");
+						$freeSpace = disk_free_space("./");
+						$usedSpace = $totalSpace-$freeSpace;
+						$percentageSpace = round($freeSpace / $totalSpace, 2)*100;
+					    ?>
+					    <div class="box" style="margin-top:10px;">
+						<div class="title">Storage</div>
+						<table style="width:100%;padding:10px;font-size:14px;">
+						    <tr>
+							<td><span class="darkText"><?php echo System::getByte($freeSpace) . ' (' . $percentageSpace . '%)'; ?></span> Ruimte beschikbaar</td>
+							<td><span class="darkText"><?php echo System::getByte($usedSpace); ?></span> Ruimte gebruikt</td>
+						    </tr>
+						</table>
+					    </div>
 					</div>
 					<div class='right'>
 						<div class='box'>
@@ -197,4 +212,11 @@ echo $chart->renderChart();
 ?>
     
 					</script>
-				</div>
+
+				<?php
+				
+				$a = new Modal('Test modal', 'test');
+$a->setContent('de uber content van de modal <div class="modalFooter"><button class="button">Annuleer</button><button class="button blue">Activeer</button></div>');
+echo $a->render();
+?>
+				<button onclick='$("#test").fadeIn();'>test</button>

@@ -28,7 +28,7 @@
 			.top {position:fixed;top:50px;left:0;right:0;bottom:0;overflow:auto;padding-top:2%;padding-bottom:2%;}
 			.box {background:#fff;padding:10px;box-shadow:0px 0px 40px -5px #000;z-index:5;position:relative;min-height:200px;}
 			.box p {margin:5px;}
-			.box input, .box select {background:#eee;padding:10px;width:438px;border:1px solid #ccc;margin:10px;margin-bottom:20px;}
+			.box input, .box select {background:#eee;padding:10px;width:438px;border:1px solid #ccc;margin:10px;margin-bottom:20px;box-sizing: border-box;}
 			.box input:focus, .box select:focus {border:1px solid #00a2ff;outline:none;}
 			.box input.submit {
 				background:#00c0ff;

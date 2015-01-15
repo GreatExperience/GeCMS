@@ -7,13 +7,12 @@ class Icon extends Explorer {
     
     public static function display($src, $extra = Array()){
 	global $connect;
-	$root			= $connect['url'].'/Sources/Admin/images/icons/';
 	$iconAdditionalInfo	= '';
 	foreach($extra as $key => $value){
 	    $iconAdditionalInfo.= ' ' . $key . '="' . $value . '"';
 	}
 
-	    return '<img src="'.$root.$src.'" '.$iconAdditionalInfo.' />';
+	return '<img class="icon" src="'.$connect['url'].'/Sources/Admin/images/icons/'.$src.'"'.$iconAdditionalInfo.' />';
     }
 }
 

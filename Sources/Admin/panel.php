@@ -7,7 +7,8 @@
 	
 	/* Old functionality, will be changed to classes! */
 	require_once($connect['root'] . "Sources/Admin/system.php");
-	
+
+        if(!isset($_GET['noScripts'])){
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -17,7 +18,12 @@
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 		<script src="<?php echo $connect['url']; ?>Sources/highCharts/js/highcharts.js"></script>
 		<script src="<?php echo $connect['url']; ?>Sources/highCharts/js/modules/exporting.js"></script>
+                <script type="text/javascript" src="<?php echo $connect['url']; ?>/sources/colorPicker/js/colorpicker.js"></script>
+                <script type="text/javascript" src="<?php echo $connect['url']; ?>/sources/colorPicker/js/eye.js"></script>
+                <script type="text/javascript" src="<?php echo $connect['url']; ?>/sources/colorPicker/js/utils.js"></script>
 		<link href="./Sources/Admin/adminSources/index.css" type="text/css" rel="stylesheet" />
+                <link rel="stylesheet" href="<?php echo $connect['url']; ?>/sources/colorPicker/css/colorpicker.css" type="text/css" />
+
 		<style type='text/css'>			
 			body .container {
 				position:fixed;
@@ -46,14 +52,6 @@
 			?>
 			
 			body .sideNav {
-				overflow:auto;
-				position:fixed;
-				width:200px;
-				top:51px;
-				left:0;
-				bottom:0;
-				background:#ddd;
-				border-right:1px solid #ccc;
 				<?php
 					if(isset($_COOKIE['cmsAdminMenuCookie'])){
 						if($_COOKIE['cmsAdminMenuCookie']==1)
@@ -133,47 +131,7 @@
 			var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
 			document.cookie=c_name + "=" + c_value;
 			}
-				function resize() {
-					if($('body').width()<700){
-						$(".navText").fadeIn(0);
-						small = false;
-						
-						$('.mobileSearch').css('display','block');
-						$('.search').css('display','none');
-						
-						$('.actionIcon').css('zoom','1.5');
-						
-						$("#displayText, #settingsText, #bigBlueResize").css('display', 'none');
-						document.getElementById("logoTitle").innerHTML='<img src=\'./Sources/Admin/images/template/menuSwitch.png\' onclick=\'toggleNavMobile()\'>';
-						$(".container").css("left", "0px").css("z-index", "999");
-						$("#sideMenu").css("width", "100%").css("position", "fixed").css("transition", "0.4s");
-						$(".right, .left, .modal").addClass("mobile").css("float", "none").css("width", "100%");
-						$(".modal").css("left", "0%").css("top", "0%").css("left", "0%").css("top", "0%").css("margin-top", "50px").css("height", document.body.clientHeight-50 + "px");
-						$("#content").css("zoom", "0.65");
-						$("#content .modal").css("zoom", "1.35");
-						$(".header .button").css("font-size", "0px").css("top", "-2px");
-					}else{
-						$(".navText").fadeIn(0);
-						small = false;
-						
-						$('.mobileSearch').css('display','none');
-						$('.search').css('display','block');
-						
-						$('.actionIcon').css('zoom','1');
-						
-						$("#displayText, #settingsText, #bigBlueResize, #sideMenu").css('display', 'inline');
-						document.getElementById("search").style.display='inline-block';
-						document.getElementById("logoTitle").innerHTML='Great Experienced CMS';
-						$(".container").css("left", "201px").css("z-index", "1001");
-						$(".header .button").css("font-size", "inherit").css("top", "0");
-						$("#content").css("zoom", "1.0");
-						$(".right").css("float", "right").css("width", "49%");
-						$(".left").css("float", "left").css("width", "49%");
-						$("#content .modal").css("zoom", "1");
-						$(".modal").removeClass("mobile").css("width", "500px").css("left", "50%").css("top", "50%").css("right", "auto").css("bottom", "auto").css("margin-top", "-200px").css("marginleft", "-250px").css("height", "400px");
-						$("#sideMenu").css("left", "0px").css("width", "200px").css("transition", "0s");
-					}
-				}
+
 			$( document ).ready(function() {
 				if($('body').width()<700){resize();$("#sideMenu").css("left","-" + document.body.clientWidth + "px");}
 			
@@ -189,22 +147,16 @@
 			});
 			
 			function toggleNavMobile(){
-				if(small==true){
-					$("#sideMenu").css("left","-" + document.body.clientWidth + "px");
-					small = false;
-				}else{
-				$("#sideMenu").css("left","0px");
-					setCookie("cmsAdminMenuCookie", 0,365);
-					small = true;
-				}
+			    $("#mobileMenu").toggle();
 			}
 		</script>
 	</head>
-	<body onresize='resize();'><?php if(!isset($_GET['layout'])){ ?>
+        <body><?php } if(!isset($_GET['layout'])){ ?>
 		<nav>
 			<div class='nav'>
-			    <h1 id='logoTitle'>Great Experience CMS</h1> <h2><?php echo Icon::display('world.png', array('style' => 'margin-right:5px;position:relative;top:3px;'));echo $connect['url']; ?></h2>
-				<div class='toRight'>
+			    <img src='./Sources/Admin/images/template/menuSwitch.png' onclick='toggleNavMobile()' id="mobileMenuToggler">
+			    <h1 id='logoTitle'>Great Experience CMS</h1> <h2 class="websiteURL"><?php echo Icon::display('world.png', array('style' => 'margin-right:5px;position:relative;top:3px;'));echo $connect['url']; ?></h2>
+			    <div class='toRight'>
 					<form action='admin.php?action=search' method='post' onsubmit='exit;'><input class='search' name='search' id='search' placeholder='Search...' /></form>
 				</div>
 				<a href='./admin.php?action=settings'>
@@ -225,77 +177,38 @@
 		</nav>
 		<aside>
 			<div class='sideNav' id='sideMenu'>
-				<div class='mobileSearch'>
+			    <p style='text-align:center;margin:0;' id='bigBlueResize'>
+					<button class='button blue' onclick='navSwitch();' style='width:100%;border-radius:0;margin:0 auto;padding:8px;margin-top:-1px;'><img src='./Sources/Admin/images/template/menuSwitch.png' /></button>
+				</p>
+			    <?php echo Sidemenu::render(); ?>
+			</div>
+		    
+			<div class='mobileNav' id='mobileMenu'>
+			    <div class='mobileSearch'>
 				    <img src='./Sources/Admin/images/search.png' />
 				    <form action='admin.php?action=search' method='post' onsubmit='exit;'><input class='mobileSearchInput' name='search' id='mobileSearchInput' placeholder='Search...' /></form>
 				</div>
-				<p style='text-align:center;margin:0;' id='bigBlueResize'>
-					<button class='button blue' onclick='navSwitch();' style='width:100%;border-radius:0;margin:0 auto;padding:8px;margin-top:-1px;'><img src='./Sources/Admin/images/template/menuSwitch.png' /></button>
-				</p>
-				<a href='./admin.php'>
-					<div class='item' style='border-top:0;height:0;'></div>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/go-home.png"; ?>' />
-						<span class='navText'>Dashboard</span>
-					</div>
-				</a>
-				<a href='./admin.php?action=media&root=./Media'>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/media.png"; ?>' />
-						<span class='navText'>Media</span>
-					</div>
-				</a>
-				<a href='./admin.php?action=templates'>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/template.png"; ?>' />
-						<span class='navText'><?php echo $language['templates'] . " " . $language['manager']; ?></span>
-					</div>
-				</a>
-				<a href='./admin.php?action=plugins'>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/plugin.png"; ?>' />
-						<span class='navText'><?php echo $language['pluginManager']; ?></span>
-					</div>
-				</a>
-				<a href='./admin.php?action=menu'>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/menu.png"; ?>' />
-						<span class='navText'><?php echo $language['menu'] . " " . $language['manager']; ?></span>
-					</div>
-				</a>
-				<a href='./admin.php?action=pagelist&root=./Sources/Pages'>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/page.png"; ?>' />
-						<span class='navText'><?php echo $language['pages'] ?></span>
-					</div>
-				</a>
-				<a href='./admin.php?action=newsManager'>
-					<div class='item'>
-						<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/news.png"; ?>' />
-						<span class='navText'><?php echo $language['news'] . " " . $language['manager']; ?></span>
-					</div>
-				</a>
-				<div class='item' onclick="alert('not available yet!');">
-					<img src='<?php echo $connect['url'] . "Sources/Admin/images/template/administration.png"; ?>' />
-					<span class='navText'>Administration</span>
-				</div>
-				<div class='item' style='border-bottom:0;background:transparent;cursor:auto;height:2px;'></div>
+			    <?php echo Sidemenu::render(); ?>
 			</div>
 		</aside>
 		<section>
 			<div class='container'>
 				<?php
 }
-					if(isset($_GET['action'])) {
-						if(file_exists($connect['root'] . "Sources/Admin/pages/".$_GET['action'].".php")){
-							require_once($connect['root'] . "Sources/Admin/pages/".$_GET['action'].".php");
-						}else{
-						    $cmsError = $language['performError'];
-							include $connect['root'] . "Sources/Admin/404.php";
-						}
-					}else{
-						require_once($connect['root'] . "Sources/Admin/pages/index.php");
-					}
+try {
+		if(isset($_GET['action'])) {
+                    if(file_exists($connect['root'] . "Sources/Admin/pages/".$_GET['action'].".php")){
+			require_once($connect['root'] . "Sources/Admin/pages/".$_GET['action'].".php");
+                    }else{
+			$cmsError = $language['performError'];
+			include $connect['root'] . "Sources/Admin/404.php";
+                    }
+		}else{
+                    require_once($connect['root'] . "Sources/Admin/pages/index.php");
+		}
+} catch (Exception $e) {
+    Error::render($e->getMessage());
+}
 					
 					if(isset($_GET['note'])){
 						echo "
@@ -320,6 +233,6 @@ if(!isset($_GET['layout'])){
 				<h3 style='text-align:center;margin-top:50px;margin-bottom:25px;color:#666;'>Please enable JavaScript!</h3>
 			</div>
 		</noscript>
-<?php } ?>
+<?php } if(!isset($_GET['noScripts'])){ ?>
 	</body>
-</html>
+</html><?php } ?>

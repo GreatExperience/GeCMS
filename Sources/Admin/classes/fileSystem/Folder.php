@@ -11,7 +11,11 @@ class Folder extends Explorer {
      * @param type $src
      */
     public function __CONSTRUCT($src) {    
-	    parent::__CONSTRUCT($src);
+	parent::__CONSTRUCT($src);
+	    
+	if( ! is_dir($this->getSRC())){
+	    Throw new Exception("Not a directory");
+	}
     }
     
     /**
@@ -34,15 +38,6 @@ class Folder extends Explorer {
 	}
 	
 	return $output;
-    }
-    
-    public function getIsDir(){
-	
-	if(is_dir($this->getSRC())){
-	    return true;
-	}else{
-	    return false;
-	}
     }
     
     public function getIsGlobal(){

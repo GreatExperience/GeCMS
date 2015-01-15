@@ -1,6 +1,9 @@
 <?php
 	$language = array(
-		
+	    
+		/* WEBSITE: NEWS */
+		"currentNews" => "Laatste nieuws",
+	    
 		/* Engine */
 		"version" => "Versie",
 		
@@ -10,6 +13,8 @@
 	    
 		"performError" => "De actie die je probeert te maken bestaat niet (meer)",
 		"404e" => "Deze pagina blijkt niet (meer) te bestaan!",
+                "validateError" => "One or more input fields are not valid!",
+                "validateErrorTitle" => "Validate error",
 		
 		/* Plugins */
 		"downloadPlugins" => "Plugins downloaden",
@@ -61,16 +66,72 @@
 		/* Template */
 		"template" => "Template",
 		"templates" => "Templates",
+                "templateVersion" => "Template versie",
+                "templateCmsVersion" => "CMS versie",
 		"downloadTemplates" => "Templates downloaden",
 		"templateIsDefault" => "Als default ingesteld",
 		"templateSetDefault" => "Als default instellen",
-		"oldTemplate" => "Huidige template als default",
-		"newTemplate" => "nieuwe template als default",
+		"oldTemplate" => "Huidige template",
+		"newTemplate" => "Nieuwe template",
+		"newTemplateThirdParty" => "Templates van derden",
 		"newTemplateDefault" => "Je staat op het punt om een nieuwe standaard template in te stellen.",
 		"deleteTemplateSucces" => "Succesvol template verwijderd!",
 		"templateInstall" => "Templates installeren",
 		"templateDelete" => "Template verwijderen",
 		"templateEdit" => "template aanpassen",
+            
+                /* Template editor */
+            	"templateEditor" => "Template editor",
+                "look" => "Uiterlijk",
+                "minimal" => "Minimale",
+                "maximal" => "Maximale",
+                "additional" => "Extra",
+                "textAlign" => "Tekst richting",
+                "textDecoration" => "Tekst opmaak",
+                "lookDefault" => "Algemeen",
+                "templateEditHeader" => "Header",
+                "templateEditMenu" => "Menu",
+                "templateEditFooter" => "Footer",
+                "templateEditBody" => "Body",
+                "templateEditContainer" => "Inhoud",
+                "top, left" => "bovenin, Links",
+                "top, center" => "bovenin, Middenin",
+                "top, right" => "bovenin, Rechts",
+                "center, left" => "Middenin, Links",
+                "center, center" => "Middenin, Middenin",
+                "center, right" => "Middenin, Rechts",
+                "bottom, left" => "Onderin, Links",
+                "bottom, center" => "Onderin, Middenin",
+                "bottom, right" => "Onderin, Rechts",
+                "color" => "Kleur",
+                "family" => "familie",
+                "size" => "Grootte",
+                "type" => "Type",
+                "solid" => "Solide",
+                "dotted" => "Stippel",
+                "double" => "Dubbel",
+                "background" => "Achtergrond",
+                "backgroundPosition" => "Positie",
+                "backgroundRepeat" => "Herhalen",
+                "margin" => "Marge",
+                "padding" => "Vulling",
+                "left" => "Links",
+                "right" => "Rechts",
+                "center" => "Midden",
+                "top" => "Boven",
+                "bottom" => "Onder",
+                "border" => "Border",
+                "borderRadius" => "Ronding",
+                "outline" => "Outline",
+                "position" => "Positie",
+                "absolute" => "Absoluut",
+                "fixed" => "Vast",
+                "relative" => "Relatief",
+                "static" => "Statisch",
+                "inherit" => "ovenerven",
+                "width" => "Breedte",
+                "height" => "Hoogte",
+                "displayMenuFooter" => "Menu weergeven in de footer",
 		
 		/* Editor */
 		"editor" => "Editor",
@@ -82,10 +143,15 @@
 		"newPageExists" => "Pagina bestaat al!",
 		"pageDefault" => "Sjabloon",
 		"pageDefaultIn" => "Default template gebruiken",
+		"pageSelect" => "Pagina selecteren",
 		
 		/* Multi use */
 		"name" => "Naam",
 		"save" => "Opslaan",
+		"go" => "Doorgaan",
+		"show" => "Tonen",
+		"hide" => "Verbergen",
+		"information" => "Informatie",
 		"andReturn" => "en verder aanpassen",
 		"add" => "Toevoegen",
 		"saveSucces" => "Succesvol opgeslagen!",
@@ -105,6 +171,7 @@
 		"succesDelete" => "Succesvol verwijderd!",
 		"select" => "Selecteren",
 		"author" => "Auteur",
+                "license" => "Licentie",
 		"options" => "Opties",
 		"pageviews" => "Pagina weergaves",
 		"image" => "Afbeelding",
@@ -157,6 +224,7 @@
 		"menuSideInfo" => "<p style='margin-top:0;'>Je kan de zij- menu geheel naar eigen wensen invullen. Ook is het mogelijk om plugins te gebruiken zoals je dat op normale pagina's kan. Op deze manier kan je jouw pagina's volledig inrichten zoals jij dat wilt.</p>
 							Hou er rekening mee dat een Zij- menu ongeveer 250-500 pixels breedt is! Dit verschilt per template die je gebruikt.",
 		"menuSideEditDone" => "Zij- menu opgeslagen!",
+            
 		/* Codemirror */
 		"editor" => "Editor",
 		
@@ -195,18 +263,18 @@
 		"languageBrowse" => "Taalpakketten opzoeken",
 		
 		/* months */
-		"month1" => "Januari",
-		"month2" => "Februari",
-		"month3" => "Maart",
-		"month4" => "April",
-		"month5" => "Mei",
-		"month6" => "Juni",
-		"month7" => "Juli",
-		"month8" => "Augustus",
-		"month9" => "September",
-		"month10" => "Oktober",
-		"month11" => "November",
-		"month12" => "December",
+		"month1" => "januari",
+		"month2" => "februari",
+		"month3" => "maart",
+		"month4" => "april",
+		"month5" => "mei",
+		"month6" => "juni",
+		"month7" => "juli",
+		"month8" => "augustus",
+		"month9" => "september",
+		"month10" => "oktober",
+		"month11" => "november",
+		"month12" => "december",
 		
 		/* Search */
 		"mediaPages" => "Media en Pagina's",

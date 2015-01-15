@@ -72,7 +72,7 @@
 										<tr>
 											<td style='width:100px;'><strong><?php echo $language['cat']; ?></strong></td>
 											<td>
-												<select style='width:90%' name='newsCat'>
+												<select style='width:100%' name='newsCat'>
 													<?php 
 														$query = $dbh->prepare("SELECT * FROM ".$connect['ext']."news_cats");
 														$query->execute();
@@ -89,7 +89,8 @@
 										<tr>
 											<td style='width:100px;'><strong>Image URL</strong></td>
 											<td>
-												<input id='title' name='newsImage' style='width:90%;' value='<?php echo $newsImage; ?>' placeholder='Image URL' />
+												<input id='title' name='newsImage' style='width:100%; padding-right:121px;' value='<?php echo $newsImage; ?>' placeholder='Image URL' />
+												<button class="button" style="float:right;position:relative;margin-bottom:-30px;top:-31px;left:3px;"><?php echo $language['mediaInsert']; ?></button>
 											</td>
 										</tr>
 									</table>
@@ -112,11 +113,49 @@
 								plugins: [
 									"advlist autolink lists link image charmap print preview anchor",
 									"searchreplace visualblocks code fullscreen",
-									"insertdatetime media table contextmenu paste moxiemanager"
+									"insertdatetime media table contextmenu paste"
 								],
 								toolbar: "insertfile undo redo | styleselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-								theme_advanced_resizing: true
+								file_browser_callback : myFileBrowser
 							});
+							
+						    function myFileBrowser (field_name, url, type, win) {
+							window.fileInput = field_name;
+							window.hideIt = win;
+
+							/* If you work with sessions in PHP and your client doesn't accept cookies you might need to carry
+							   the session name and session ID in the request string (can look like this: "?PHPSESSID=88p0n70s9dsknra96qhuk6etm5").
+							   These lines of code extract the necessary parameters and add them back to the filebrowser URL again. */
+
+							var cmsURL = "./admin.php?action=displayMedia&layout=false&root=./Media"
+							if (cmsURL.indexOf("?") < 0) {
+							    //add the type as the only query parameter
+							    cmsURL = cmsURL + "?type=" + type;
+							}
+							else {
+							    //add the type as an additional query parameter
+							    // (PHP session ID is now included if there is one at all)
+							    cmsURL = cmsURL + "&dialog=&type=" + type;
+							}
+
+							tinyMCE.activeEditor.windowManager.open({
+							    file : cmsURL,
+							    title : '<?php echo $language['mediaInsert']; ?>...',
+							    width : (document.body.clientWidth / 100 ) * 80,  // Your dimensions may differ - toy around with them!
+							    height : (document.body.clientHeight / 100 ) * 80,
+							    resizable : "yes",
+							    inline : "yes",  // This parameter only has an effect if you use the inlinepopups plugin!
+							    close_previous : "no"
+							}, {
+							    window : win,
+							    input : field_name,
+							});
+							return false;
+						      }
+						      
+						    window.fileNamespace = "";
+						    window.fileInput = "Not set";
+						     window.hideIt = "set";
 						</script>
 					</div>
 				</form>

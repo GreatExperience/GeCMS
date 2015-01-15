@@ -1,93 +1,73 @@
 <?php 
-/**
- * 
- *  ADMIN.PHP
- * 
- *  That's where to edit a website :)
- * 
- * Components:	    Login page, Admin panel
- * File version:    2
- * 
- */
 
 /* Include system */
 require_once("./SSI.php");
 
-/* If POST request */
 if(isset($_POST['username'])&&isset($_POST['password'])){
+		
+    /* checking username and password */
+    $selectUser = $dbh->prepare("SELECT * FROM ".$connect['ext']."users WHERE username=? AND password=? ");
+    $selectUser->execute(array($_POST['username'], crypt($_POST['password'], md5('$GeSALT'.stripslashes($_POST['username']).'EndGeSALT$'))));
     
-		$username =  stripslashes($_POST['username']);
-		
-		/* checking username and password */
-		$selectUser = $dbh->prepare("SELECT * FROM ".$connect['ext']."users WHERE username=? AND password=? ");
-		$selectUser->execute(array($_POST['username'], crypt($_POST['password'], md5('$GeSALT'.$username.'EndGeSALT$'))));
-		
-		/* checking if user exists */
-		if($selectUser->RowCount()==1)
-		{
-			/* Get user data */
-			$selectUser = $selectUser->fetchObject();
+    if($selectUser->RowCount() != 1){
+	$fail = "<div class='error'>Invalid username or password!</div>";
+    }
+	
+    /* Get user data */
+    $selectUser = $selectUser->fetchObject();
 			
-			/* Session handling */
-			$selectSession = $dbh->prepare("SELECT * FROM ".$connect['ext']."sessions WHERE userIp=? AND userAccount=? ");
-			$selectSession->execute(array($_SERVER['REMOTE_ADDR'], $selectUser->id));
+    /* Session handling */
+    $selectSession = $dbh->prepare("SELECT * FROM ".$connect['ext']."sessions WHERE userIp=? AND userAccount=? ");
+    $selectSession->execute(array($_SERVER['REMOTE_ADDR'], $selectUser->id));
 			
-			/* If there is no session, create one */
-			if($selectSession->RowCount()==0) {
-				$insertSession = $dbh->prepare("INSERT INTO ".$connect['ext']."sessions (userIp, userAccount) VALUES (?, ?)");
-				$insertSession->execute(array($_SERVER['REMOTE_ADDR'], $selectUser->id));
-			}
+    /* If there is no session, create one */
+    if($selectSession->RowCount()==0) {
+	$insertSession = $dbh->prepare("INSERT INTO ".$connect['ext']."sessions (userIp, userAccount) VALUES (?, ?)");
+	$insertSession->execute(array($_SERVER['REMOTE_ADDR'], $selectUser->id));
+    }
 			
-			/* When cookie already exists there is no need to create another one */
-			if(!ISSET($_COOKIE['574a8h3rt4'])){
+    /* When cookie already exists there is no need to create another one */
+    if(!ISSET($_COOKIE['574a8h3rt4'])){
 				
-				/* Start fix for login */
-				ob_start();
+	/* Start fix for login */
+	ob_start();
 				
-				/* Boolean as check */
-				$cookieEndless = true;
+	/* Boolean as check */
+	$cookieEndless = true;
 				
-				/* Set cookie for long time period */
-				if(isset($_POST['autoLogin'])){
-				    if($_POST['autoLogin']=='on'){
-					setcookie("574a8h3rt4", $selectUser->id, time()+3600);
-				    }else{$cookieEndless = false;}
-				}else{$cookieEndless = false;}
+	/* Set cookie for long time period */
+	if(isset($_POST['autoLogin'])){
+	    if($_POST['autoLogin']=='on'){
+		setcookie("574a8h3rt4", $selectUser->id, time()+3600);
+	    }else{$cookieEndless = false;}
+	}else{$cookieEndless = false;}
 				    
-				/* Set cookie with limited time */
-				if($cookieEndless==false)
-				    setcookie("574a8h3rt4", $selectUser->id);
+	/* Set cookie with limited time */
+	if( ! $cookieEndless)
+	    setcookie("574a8h3rt4", $selectUser->id);
 				
-				/* End fix for login */
-				ob_end_flush();
-			}
+	/* End fix for login */
+	ob_end_flush();
+    }
 			
-			/* Send user to the admin panel */
-			echo "<script>window.location='./admin.php';</script>";
-			
-			/* Fix */
-			exit;
-			
-		}else{
-			/* Invalid */
-			$fail = "<div class='error'>Invalid username or password!</div>";
-		}
+    /* Send user to the admin panel */
+    echo "<script>window.location='./admin.php';</script>";
+    exit;
 }else{
-	/* no post sended */
-	if(isset($_post))$fail = "<div class='error'>Error: Data not sended!</div>";
+    /* no post sended */
+    if(isset($_post))$fail = "<div class='error'>Error: Data not sended!</div>";
 }
 	
 
 
 /* Check if person is logged */
-if($log==true){
-	
-	/* return admin panel */
-	require_once($connect['root'] . "Sources/Admin/panel.php");
-	
+if($log){
+    
+    /* return admin panel */
+    require_once($connect['root'] . "Sources/Admin/panel.php");	
 }else{
     
-	/* Login page */
+    /* Login page */
 	echo "
 <!DOCTYPE html>
 <html>
@@ -111,9 +91,9 @@ if($log==true){
 			}
 			h1 {text-align:center;font-size:32px;margin-top:-20px;margin-bottom:30px;}
 			h1 img {position:relative;top:35px;margin-right:10px;}
-			.container {width:500px;margin:0 auto;}
+			.container {display:block;width:500px;margin:0 auto;}
 			.top {position:fixed;top:40%;margin-top:-162px;left:0;right:0;bottom:0;}
-			.box {background:#fff;padding:10px;box-shadow:0px 0px 40px -5px #000;}
+			.box {background:#fff;padding:10px;box-shadow:0px 0px 40px -5px #000;-webkit-animation: loginFade 0.6s;-moz-animation: loginFade 0.6s;animation: loginFade 0.6s;border-radius:5px;}
 			.box p {margin:5px;}
 			.box input {background:#eee;padding:10px;width:438px;border:1px solid #ccc;margin:10px;margin-bottom:20px;}
 			.box input:focus {border:1px solid #00a2ff;outline:none;}
@@ -164,6 +144,18 @@ if($log==true){
 			.logo {width:90px;margin:0 auto;margin-left:15px;}
 			
 			table {width:100%;float:left;padding-top:15px;border-collapse:collapse;}
+			
+			/* Chrome, Safari, Opera */
+			@-webkit-keyframes loginFade {
+			    from {-ms-transform: scale(0,0);-webkit-transform: scale(0,0);transform: scale(0,0);box-shadow:0px 0px 0px 0px #000;}
+			    to {white;-ms-transform: scale(1,1);-webkit-transform: scale(1,1);transform: scale(1,1);box-shadow:0px 0px 40px -5px #000;}
+			}
+
+			/* Standard syntax */
+			@keyframes loginFade {
+			    from {-ms-transform: scale(0,0);-webkit-transform: scale(0,0);transform: scale(0,0);box-shadow:0px 0px 0px 0px #000;}
+			    to {white;-ms-transform: scale(1,1);-webkit-transform: scale(1,1);transform: scale(1,1);box-shadow:0px 0px 40px -5px #000;}
+			}
 		</style>
 		<script>
 		    function resize() {

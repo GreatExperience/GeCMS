@@ -9,53 +9,50 @@
 				<div id='content'>
 					<?php echo displayMenuConfig(); ?>
 				</div>
-				<div class='modal' id='newMenuItem_modal'>
-				<div class='title'><?php echo $language['newMenu']; ?></div>
-					<form action='admin.php?action=addmenuitem' method='POST'>
-						<div class='cont'>
-							<div class='headImage'></div>
-							<table style='width:80%;margin:0 auto;margin-top:30px;'>
-								<tr>
-									<td style='width:75px;'>
-										<?php echo $language['name']; ?>
-									<td>
-										<input type='text' name='menuName' placeholder='<?php echo $language['name']; ?>' title='' style='margin-left:-10px;display:Block;width:100%;' REQUIRED />
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<?php echo $language['menuPosition']; ?>
-									<td>
-										<input type='number' name='menuPosition' value='0' title='' style='margin-left:-10px;display:Block;width:25%;float:left;' REQUIRED/>
-										<span style='position:relative;left:40px;top:8px;'><?php echo $language['menuFrame']; ?></span>
-										<select name='menuFrame' style='display:block;width:40%;float:right;margin-right:-7px;'>
-											<option value='_BLANK'><?php echo $language['menuBlank']; ?></option>
-											<option value='_SELF'><?php echo $language['menuSelf']; ?></option>
-											<option value='_TOP'><?php echo $language['menuTop']; ?></option>
-											<option value='_PARENT'><?php echo $language['menuParent']; ?></option>
-										</select>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<?php echo $language['menuUrl']; ?>
-									<td>
-										<input type='text' name='menuURL' placeholder='http://www.example.com/' title='' style='margin-left:-10px;display:Block;width:100%;' REQUIRED />
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<?php echo $language['menuDropIN']; ?>
-									<td>
-										<?php
-											echo displayMenuDrops();
-										?>
-									</td>
-								</tr>
-							</table>
-						</div>
-						<input type='submit' class='submit' value='<?php echo $language['create']; ?>' />
-					</form>
-					<button class='button' onclick='$("#newMenuItem_modal").fadeOut();'><?php echo $language['cancel']; ?></button>
-				
-				</div>
+<?php 
+
+    $menuContent = '
+	<form action="admin.php?action=addmenuitem" method="POST">
+	    <table style="width:80%;margin:0 auto;margin-top:30px;">
+		<tr>
+		    <td style="width:75px;">'.$language['name'].'
+		    <td><input type="text" name="menuName" placeholder="'.$language['name'].'" title="" style="margin-left:-10px;display:Block;width:100%;" REQUIRED /></td>
+		</tr>
+		<tr>
+		    <td>'.$language['menuPosition'].'
+		    <td>
+			<input type="number" name="menuPosition" value="0" style="margin-left:-10px;display:Block;width:25%;float:left;" REQUIRED/>
+			<span style="position:relative;left:40px;top:8px;">'.$language['menuFrame'].'</span>
+			<select name="menuFrame" style="display:block;width:40%;float:right;margin-right:-7px;">
+			    <option value="_BLANK">'.$language['menuBlank'].'</option>
+			    <option value="_SELF">'.$language['menuSelf'].'</option>
+			    <option value="_TOP">'.$language['menuTop'].'</option>
+			    <option value="_PARENT">'.$language['menuParent'].'</option>
+			</select>
+		    </td>
+		</tr>
+		<tr>
+		    <td>'.$language['menuUrl'].'
+		    <td>
+			<input type="text" name="menuURL" id="menuURL" placeholder="http://www.example.com/" style="margin-left:-10px;display:Block;width:100%;border-radius:0 3px 3px 0;padding-right:100px;" REQUIRED />
+			<button class="button" id="btnSelectPage" style="float:right;margin-top:-29px;margin-right:10px;">Selecteren</button>
+		    </td>
+		</tr>
+		<tr>
+		    <td>'.$language['menuDropIN'].'</td>
+		    <td>'.displayMenuDrops().'</td>
+		</tr>
+	    </table>
+	    <div class="modalFooter">
+		<input type="submit" class="button submit" value="'.$language['create'].'" />
+		<button class="button" onclick="$(\'#newMenuItem_modal\').fadeOut();return false;">'.$language['cancel'].'</button>
+	    </div>
+	</form>
+    ';
+    $menu = new Modal($language['newMenu'], 'newMenuItem_modal');
+    $menu->setContent($menuContent);
+    echo $menu->render();
+    
+    $pageModal = new pageModal();
+    echo $pageModal->renderModal('btnSelectPage', '#menuURL');
+	    ?>

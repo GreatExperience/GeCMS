@@ -13,6 +13,10 @@
 	$query->bindParam(':offset', $offset, PDO::PARAM_INT);
 	$query->bindParam(':end', $end, PDO::PARAM_INT);
 	$query->execute();
+	
+	$amountQuery = $dbh->prepare("SELECT id FROM ".$connect['ext']."news_items WHERE cat=:cat");
+	$amountQuery->bindParam(':cat', $_GET['cat']);
+	$amountQuery->execute();
     }else{
 	
 	/* get news items (all) */
@@ -21,6 +25,16 @@
 	$query->bindParam(':end', $end, PDO::PARAM_INT);
 	$query->execute();
 
+	$amountQuery = $dbh->prepare("SELECT id FROM ".$connect['ext']."news_items");
+	$amountQuery->execute();
+
+    }
+    
+    $amount = $amountQuery->rowCount();
+    $pages = 1;
+    while($amount > 9){
+	$pages++;
+	$amount-=10;
     }
     
     /* styling for templates */
@@ -41,7 +55,7 @@
 		<tr>
 			<td class='headerOne'>".$img."</td>
 			<td class='headerTwo'>
-				<a href='?page=".$_GET['page']."&article=".$row->id."'><h1>".$row->title."</h1></a>
+				<a href='?page=".$_GET['page']."&article=".$row->id."' style='color:#333;'><h1>".$row->title."</h1></a>
 				<p class='newsDate'><img src='./Sources/Admin/images/icons/calendar.png' /> ".$row->dateDay." ". $language['month'.$row->dateMonth] . " " . $row->dateYear . "  <img src='./Sources/Admin/images/icons/book.png' class='iconTwo'/> ".$selectCat->name."</p>
 				<p class='newsDescription'>".$row->description."</p>
 			</td>
@@ -54,5 +68,16 @@
     
     /* end styling */
     $newsOutput .= "</div>";
-	
+    
+    $pageOffsetModifier = 0;
+    while($pages > 0){
+
+	$urlOffset = ($pages > 1 ? '&offset='.($pages*10-10) : '');
+	$urlOffset .= (isset($_GET['cat']) ? '&cat='.$_GET['cat'] : '');
+
+	$url = '?page='.$_GET['page'].$urlOffset;
+	$disabled = (isset($_GET['offset'])&&$pages*10==$_GET['offset'] ? ' DISABLED' : '');
+	$newsOutput .= '<a href="'.$url.'"><button class="button" style="float:right;margin-left:2px;"'.$disabled.'>'.$pages.'</button></a>';
+	$pages--;
+    }
 ?>

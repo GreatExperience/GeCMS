@@ -1,7 +1,7 @@
 <?php 
-	if(!$log==true)exit;
+	if(!$log) exit;
 
-	$news = $dbh->prepare("SELECT title, dateDay, dateMonth, dateYear, id, cat FROM ".$connect['ext']."news_items ORDER BY id DESC");
+	$news = $dbh->prepare("SELECT i.title, i.dateDay, i.dateMonth, i.dateYear, i.id, c.name FROM ".$connect['ext']."news_items i, ".$connect['ext']."news_cats c WHERE i.cat = c.id ORDER BY id DESC");
 	$news->execute();
 	$newsOutput = "<table class='table' style='width:100%;'><tr><th style='padding-left:10px;'>".$language['name']."</th><th>".$language['cat']."</th><th>".$language['date']."</th><th style='text-align:center;width:80px;'>Actions</th></tr>";
 	$newsOrder = "nodateYet";
@@ -14,17 +14,7 @@
 			 $newsOrder = $row->dateMonth.$row->dateYear;
 		}
 		
-		/* Get cat name */
-		$getCat = $dbh->prepare("SELECT * FROM ".$connect['ext']."news_cats WHERE id=?");
-		$getCat->execute(array($row->cat));
-		if($getCat->rowCount()==1){
-			$getCat = $getCat->fetchObject();
-			$getCat = $getCat->name;
-		}else{
-			$getCat = "Error: No cat selected!";
-		}
-		
-		$newsOutput .= "<tr><td>".$row->title."</td><td>".$getCat."</td><td>".$row->dateDay. " " . $language['month'.$row->dateMonth] . " " . $row->dateYear."</td><td style='text-align:center;'>
+		$newsOutput .= "<tr><td>".$row->title."</td><td>".$row->name."</td><td>".$row->dateDay. " " . $language['month'.$row->dateMonth] . " " . $row->dateYear."</td><td style='text-align:center;'>
 							<img src='".$connect['url']."/Sources/Admin/images/icons/eye.png' title='".$language['eye']."'>
 							<a style='text-decoration:none;' />
 								<a href='./admin.php?action=newsEditor&id=".$row->id."'><img src='".$connect['url']."/Sources/Admin/images/icons/page_edit.png' title='".$language['edit']."'></a>
@@ -42,14 +32,14 @@
 							</td></tr>";
 	}
 	
-	$cats = $dbh->prepare("SELECT * FROM ".$connect['ext']."news_cats ORDER BY position");
+	$cats = $dbh->prepare("SELECT c.id, c.name, c.position, count(i.id) As 'amount' FROM ".$connect['ext']."news_cats c, ".$connect['ext']."news_items i WHERE c.id = i.cat GROUP BY c.id, c.name, c.position ORDER BY c.position");
 	$cats->execute();
 	$catsOutput = "<table class='table' style='width:100%;'><tr><th style='padding-left:10px;'>".$language['name']."</th><th style='width:50px;'>".$language['items']."</th><th style='width:50px;'>".$language['menuPosition']."</th><th></th><th style='width:160px;text-align:right;padding-right:10px;'>Actions</th></tr>";
 	
 	while($row = $cats->fetchObject()){
 	
 		/* Selecting OTHER cats */
-		$alternativeCats = $dbh->prepare("SELECT * FROM ".$connect['ext']."news_cats");
+		$alternativeCats = $dbh->prepare("SELECT id, name FROM ".$connect['ext']."news_cats");
 		$alternativeCats->execute();
 		$alternativeOutput = "";
 		while($alternative = $alternativeCats->fetchObject()){
@@ -57,22 +47,18 @@
 				$alternativeOutput .= "<option value='".$alternative->id."'>".$alternative->name."</option>";
 			}
 		}
-		
-		$newsByCat = $dbh->prepare("SELECT * FROM ".$connect['ext']."news_items WHERE cat=?");
-		$newsByCat->execute(array($row->id));
-		$newsImg = "";
-		if(!$newsByCat->rowCount()>=1){
+
+		if(!$row->amount>=1){
 			$newsImg = "<img src='".$connect['url']."/Sources/Admin/images/icons/page_delete.png' title='".$language['delete']."' onclick='$(\"#deletecat".$row->id."\").fadeIn();' style='float:right;' >";
 		}else{
 			$newsImg = "<button class='button' style='float:right;padding:2px;margin:-3px;margin-right:2px;' onclick='$(\"#movecat".$row->id."\").fadeIn();'>".$language['catMove']."</button>";
 		}
-		$amount = $newsByCat->rowCount();
 		
 		$catsOutput .= "
 			<tr>
 				<form action='./admin.php?action=newsSaveCatEdit&id=".$row->id."' method='post'>
 					<td style='padding-left:10px;'><input type='text' value='".$row->name."' style='font-weight:normal;width:85%;' name='editName' id='editName".$row->id."' DISABLED REQUIRED /></td>
-					<td>".$amount."</td>
+					<td>".$row->amount."</td>
 					<td><input type='text' value='".$row->position."' style='width:100%;' name='editPosition' id='editPosition".$row->id."' DISABLED REQUIRED /></td>
 					<td style='width:70px;'><button class='button' style='display:none;' id='saveCat".$row->id."'>Save</button></td>
 				</form>
@@ -115,12 +101,28 @@
 				<header>
 					<div class='header'>
 						<button class='root'><?php echo $language['news']; ?></button>
-						<a href='./admin.php?action=newsEditor'><button class='button blue' style='float:right;margin-right:10px;margin-top:4px;' onclick='$("#newPage_modal").fadeIn();'><?php echo "<img src='".$connect['url']."/Sources/Admin/images/icons/page_add.png'>".$language['news'] . " " . $language['create']; ?></button></a>
-						<button class='button' onclick='$("#catDialog").fadeIn();' style='float:right;margin-right:10px;margin-top:4px;'><?php echo "<img src='".$connect['url']."/Sources/Admin/images/icons/folder_edit.png'>"; ?><?php echo $language['cats'] . " " . $language['manage']; ?></button>
-						<button class='button' onclick='$("#aboutNewsDialog").fadeIn();' style='float:right;margin-right:10px;margin-top:4px;'><img src='./Sources/Admin/images/icons/anchor.png' /><?php echo $language['newsAbout']; ?></button>
+						<a href='./admin.php?action=newsEditor'><button class='button blue' style='float:right;margin-right:10px;margin-top:4px;' onclick='$("#newPage_modal").fadeIn();'><?php echo Icon::display('page_add.png') . $language['news'] . " " . $language['create']; ?></button></a>
+						<button class='button' onclick='$("#catDialog").fadeIn();' style='float:right;margin-right:10px;margin-top:4px;'><?php echo Icon::display('folder_edit.png'). $language['cats'] . " " . $language['manage']; ?></button>
+						<button class='button' onclick='$("#aboutNewsDialog").fadeIn();' style='float:right;margin-right:10px;margin-top:4px;'><?php echo Icon::display('anchor.png') . $language['newsAbout']; ?></button>
 					</div>
 				</header>
 				<div id='content'>
+<?php
+
+    $catContent = '
+	<div style="padding:10px;""">
+	    <form action="./admin.php?action=newsAddCat" method="post">
+		<button class="button blue">'.$language['create'].'</button>
+		<input type="text" name="newsCat" style="width:375px;margin-bottom:10px;" placeholder="'.$language['title'].'" REQUIRED />
+	    </form>
+	    '.$catsOutput.'
+							</div>
+	';
+    $catModal = new Modal($language['cats'] . ' ' . $language['manage'], 'catDialog');
+    $catModal->setContent($catContent);
+    $catModal->setHeader(false);
+    echo $catModal->render();
+?><!--
 					<div class='modal' id='catDialog'>
 						<div class='title'><?php echo $language['cats'] . " " . $language['manage']; ?></div>
 						<div class='cont'>
@@ -133,7 +135,7 @@
 							</div>
 						</div>
 						<button class='button' onclick='$("#catDialog").fadeOut();' style='margin-right:10px;'><?php echo $language['cancel']; ?></button>
-					</div>
+					</div>-->
 					<div class='modal' id='aboutNewsDialog'>
 						<div class='title'><?php echo $language['newsAbout']; ?></div>
 						<div class='cont'>

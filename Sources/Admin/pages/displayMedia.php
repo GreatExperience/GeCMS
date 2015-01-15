@@ -14,7 +14,7 @@
 
 	if(!is_dir($_GET['root'])){
 	    echo "
-				<div style='text-align:center;'><img src='./sources/admin/images/gelogo.png' style='width:15%;margin:0 auto;margin-top:5%;' /></div>
+				<div style='text-align:center;'><img src='./Sources/Admin/images/gelogo.png' style='width:15%;margin:0 auto;margin-top:5%;' /></div>
 				<h1 style='font-size:80px;color:#555;text-align:center;'>That's an error!</h1>
 				<p style='text-align:center;font-size:24px;'>Directory missing on path ".$_GET['root']."</p>
 				<p style='text-align:center;'><button class='button'>Browse media files</button></p>";
@@ -88,7 +88,7 @@
     }
 ?>
 <div class='sideNAVI'>
-    <p style='margin:5px;'><a href='admin.php?action=<?php echo $_GET['action']."&type=".$_GET['type']."&root=".dirname($_GET['root']); ?>'><button class='button blue' style='width:100%;'><img src='<?php echo $connect['url']; ?>/Sources/Admin/images/icons/folder_explore.png' /> <?php echo $language['directoryUp']; ?></button></a></p>
+    <p style='margin:5px;'><a href='admin.php?action=<?php echo $_GET['action']."&type=".$_GET['type']."&root=".dirname($_GET['root']); ?>&layout=false'><button class='button blue' style='width:100%;'><img src='<?php echo $connect['url']; ?>/Sources/Admin/images/icons/folder_explore.png' /> <?php echo $language['directoryUp']; ?></button></a></p>
     <?php
 	$color = 0;
 	foreach($directoryArray as $value){
@@ -100,7 +100,7 @@
 		$color = 0;
 	    }
 	    echo "
-		<a href='admin.php?action=".$_GET['action']."&type=".$_GET['type']."&root=".$_GET['root']."/".$value."/'>
+		<a href='admin.php?action=".$_GET['action']."&type=".$_GET['type']."&root=".$_GET['root']."/".$value."/&layout=false'>
 		    <div style='border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin-top:-1px;padding:7px;padding-top:5px;background:#".$bgColor.";'>
 			<img src='".$connect['url']."/Sources/Admin/images/icons/folder.png' style='position:relative;top:2px;' /> " . $value . "
 		    </div>
@@ -141,6 +141,7 @@
 	border-right:1px solid #ccc;
 	background:#eee;
 	border-bottom-left-radius:5px;
+	overflow-y:auto;
 	<?php if($_GET['type'] == 'file') echo 'display:none;'; ?>
     }
     .fileContainer {

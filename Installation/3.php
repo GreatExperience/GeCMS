@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `".$_POST['dbPrefix']."users` (
   `permissions` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 );
-INSERT INTO `".$_POST['dbPrefix']."users` (`id`, `username`, `password`, `mail`, `permissions`) VALUES (1, '".$_POST['username']."', '".crypt($_POST['password'], md5('$GeSALT'.$_POST['username'].'EndGeSALT$'))."', '".$_POST['mail']."', 1);
+INSERT INTO `".$_POST['dbPrefix']."users` (`id`, `username`, `password`, `mail`, `permissions`) VALUES (1, '".$_POST['username']."', '".crypt($_POST['password'], md5('$GeSALT'.stripslashes($_POST['username']).'EndGeSALT$'))."', '".$_POST['mail']."', 1);
 
 CREATE TABLE IF NOT EXISTS `".$_POST['dbPrefix']."visitors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -112,6 +112,8 @@ CREATE TABLE IF NOT EXISTS `".$_POST['dbPrefix']."visitors` (
         echo($e->getMessage());
 	$pass = false;
 	echo '<script>window.location="./install.php?step=2&database='.$_POST['database'].'&msg='.urlencode('Could not connect to the database. Please make sure all data is correct! technical message: ' . $e->getMessage).'";</script>';
+    
+	exit;
     }
 	
 /**
@@ -123,25 +125,27 @@ $body ="<?php
 	1 = Installing
 	2 = Closed for use
 */
-\$Install = '0';
-    
-/* Database connection settings */
-\$connect['client'] 	= '".$_POST['database']."';
-\$connect['dbName'] 	= '".$_POST['serverName']."';
-\$connect['dbHost'] 	= '".$_POST['server']."';
-\$connect['dbUser'] 	= '".$_POST['dbUsername']."';
-\$connect['dbPass'] 	= '".$_POST['dbPassword']."';
-\$connect['ext']		= '".$_POST['dbPrefix']."';
-\$connect['root']	= '".$_POST['webRoot']."';
-\$connect['url']		= '".$_POST['webUrl']."';
-    
-/* Setup connection */
-try {
-    \$dbh = new PDO(\$connect['client'].':dbname='.\$connect['dbName'].';host='.\$connect['dbHost'], \$connect['dbUser'], \$connect['dbPass']);
-} catch (PDOException \$e) {
-    echo '<h1>Whoops!</h1> <h2>Database connection failed</h2> <h3>Technical message:</h3> <p>' . \$e->getMessage() . '</p>';
-}
+\$Install = 0;
 
+if( ! (int)\$Install == 1){
+    
+    /* Database connection settings */
+    \$connect['client'] 	= '".$_POST['database']."';
+    \$connect['dbName'] 	= '".$_POST['serverName']."';
+    \$connect['dbHost'] 	= '".$_POST['server']."';
+    \$connect['dbUser'] 	= '".$_POST['dbUsername']."';
+    \$connect['dbPass'] 	= '".$_POST['dbPassword']."';
+    \$connect['ext']		= '".$_POST['dbPrefix']."';
+    \$connect['root']		= '".$_POST['webRoot']."';
+    \$connect['url']		= '".$_POST['webUrl']."';
+
+    /* Setup connection */
+    try {
+	\$dbh = new PDO(\$connect['client'].':dbname='.\$connect['dbName'].';host='.\$connect['dbHost'], \$connect['dbUser'], \$connect['dbPass']);
+    } catch (PDOException \$e) {
+	echo '<h1>Whoops!</h1> <h2>Database connection failed</h2> <h3>Technical message:</h3> <p>' . \$e->getMessage() . '</p>';
+    }
+}
 ?>
 ";
 

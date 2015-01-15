@@ -2,44 +2,6 @@
 
 /*****************************************************************************
  *	functions.system.php	- ADMIN RELATED FUNCTIONS
- *
- *	File version 1
- *	Author:	Merijn Geurts
- *	
- *
- *	#####################################
- *  #       Function properties         #
- *  ###############################3#####
- *
- *	Required parameters: *
- *	Optional parameters: -
- *  Extra information:   !
- *
- *	#####################################
- *  #          Function list            #
- *  ###############################3#####
- *
- *  displayActions() 		- Returns action icons of given file
- *   * [STRING] 	File + root to file
- *	 - [BOOL] 		Compact view, default disabled
- *
- *	fileSizeCalc()			- Returns file size of given value
- *	 * [INTEGER] 	Bit to convert
- *
- *  rrmdir()				- Remove selected directory
- *   * [STRING]		Directory to remove + root
- *
- *  checkfiletype($file)	- Check file type of given file
- *   * [STRING]		File + root to file
- *
- *  is_dir_empty()			- Check if directory is empty
- *   * [STRING]		File + root to file
- *
- *  uploadFileForm()		- Creates file upload form
- *   * [STRING]		Directory where file will be uploaded to
- *   * [string]		Identification
- *	 ! ACCES TO THE UPLOAD DIALOG: upload_dialog_{Identification}
- *
  *****************************************************************************/
  
 	/* Anti hack */
@@ -89,56 +51,47 @@
 			
 			$finalDropDown = $fileId;
 			$fileId++;
+			
+			$deleteItemDialogContent = "
+			    <p style='text-align:center;'>".$language['deleteOne']." ".basename($file)." ".$language['deleteTwo']."</p>
+				<table class='ignore' style='width:90%;margin:0 auto;text-align:left;'>
+					<tr>
+						<td>".$language['file']."</td>
+						<td>".basename($file)."</td>
+					</tr>
+					<tr>
+						<td>".$language['fileType']."</td>
+						<td><span style='position:absolute;margin-left:-25px;'></span> ".checkfiletype(dirname($file)."/".basename($file))."</td>
+					</tr>
+					<tr>
+						<td>".$language['fileSize']."</td>
+						<td>".fileSizeCalc(dirname($file)."/".basename($file))."</td>
+					</tr>
+					<tr>
+						<td>".$language['filePermissions']."</td>
+						<td>".fileperms(dirname($file)."/".basename($file))."</td>
+					</tr>
+					<tr>
+						<td>".$language['fileLastEdit']."</td>
+						<td>".date ("d M Y H:i:s", filemtime(dirname($file)."/".basename($file)))."</td>
+					</tr>
+				</table>
+				</div>
+				<div class='modalFooter'>
+				    <button class='button red' style='margin-right:10px;' onclick='$(\"#loader".$finalDropDown."\").fadeIn(0);$(\"#hidden\").load(\"./Sources/Admin/pages/deleteFile.php?file=".urlencode(basename($file))."&root=".urlencode(str_replace('\\', '/', (dirname($file))))."&id=".$finalDropDown."\");'>".$language['delete']."</button>
+				    <button class='button' onclick='$(\"#deleteitem_modal_file".$finalDropDown."\").fadeOut();'>".$language['cancel']."</button>
+				    <img src='./Sources/Admin/images/loader.gif' class='loader' id='loader".$finalDropDown."' />
+				</div>
+			";
+			$deleteItemDialog = new Modal($language['file']." ".$language['delete'], 'deleteitem_modal_file'.$finalDropDown);
+			$deleteItemDialog->setContent($deleteItemDialogContent);
 			return "
 			".$viewLink."
 			
 			".$editLink."
 			
 			<img class='actionIcon' src='".$connect['url']."/Sources/Admin/images/icons/delete.png' title='".$language['delete']."' onclick='$(\"#deleteitem_modal_file".$finalDropDown."\").fadeIn();'>
-			
-								<div class='modal' id='deleteitem_modal_file".$finalDropDown."'>
-									<div class='title'>".$language['file']." ".$language['delete']."</div>
-									<div class='cont'>
-										<div class='headImage'></div>
-										<p style='text-align:center;'>".$language['deleteOne']." ".basename($file)." ".$language['deleteTwo']."</p>
-										<table class='ignore' style='width:90%;margin:0 auto;text-align:left;'>
-											<tr>
-												<td>".$language['file']."</td>
-												<td>
-													".basename($file)."
-												</td>
-											</tr>
-											<tr>
-												<td>".$language['fileType']."</td>
-												<td>
-													<span style='position:absolute;margin-left:-25px;'></span> ".checkfiletype(dirname($file)."/".basename($file))."
-												</td>
-											</tr>
-											<tr>
-												<td>".$language['fileSize']."</td>
-												<td>
-													".fileSizeCalc(dirname($file)."/".basename($file))."
-												</td>
-											</tr>
-											<tr>
-												<td>".$language['filePermissions']."</td>
-												<td>
-													".fileperms(dirname($file)."/".basename($file))."
-												</td>
-											</tr>
-											<tr>
-												<td>".$language['fileLastEdit']."</td>
-												<td>
-													".date ("d M Y H:i:s", filemtime(dirname($file)."/".basename($file)))."
-												</td>
-											</tr>
-										</table>
-									</div>
-										<button class='button red' style='margin-right:10px;' onclick='$(\"#loader".$finalDropDown."\").fadeIn(0);$(\"#hidden\").load(\"./Sources/Admin/pages/deleteFile.php?file=".urlencode(basename($file))."&root=".urlencode(str_replace('\\', '/', (dirname($file))))."&id=".$finalDropDown."\");'>".$language['delete']."</button>
-										<button class='button' onclick='$(\"#deleteitem_modal_file".$finalDropDown."\").fadeOut();'>".$language['cancel']."</button>
-										<img src='./Sources/Admin/images/loader.gif' class='loader' id='loader".$finalDropDown."' />
-								</div>
-			";
+			".$deleteItemDialog->render();
 		}else{
 			return false;
 		}
@@ -157,164 +110,6 @@
 		 rmdir($dir);
 	   }
 	}
-	
-	/* Create user system */
-	function createUser($username, $password, $mail, $permissions){
-		/**
-		 *	FUNCTION SETTINGS
-		 *
-		 *	Return 0 = User have been created
-		 *	Return 1 = User not alowed to create accounts
-		 *	Return 2 = Username exists
-		 *	Return 3 = Mail exists
-		 *	Return 4 = One or more variable empty
-		 *
-		 */
-		 
-		global $connect, $dbh, $user;
-		 
-		 /* Check if user is permissed to do this action */
-		if(!$user->permissions==1)return(1);
-		
-		/* Check if all variables are filled */
-		if(strlen($username)==0||strlen($password)==0||strlen($mail)==0||strlen($permissions)==0)
-			return(4);
-		
-		/* Check if username exists */
-		$select = $dbh->prepare("select * from ".$connect['ext']."users WHERE username=?");
-		$select->execute(array($username));
-		
-		if($select->RowCount()==1)
-			return(2);
-		
-		/* Check if mail exists */
-		$select = $dbh->prepare("select * from ".$connect['ext']."users WHERE mail=?");
-		$select->execute(array($mail));
-		
-		if($select->RowCount()==1)
-			return(3);
-		
-		/* Create account */
-		$insert = $dbh->prepare("INSERT INTO ".$connect['ext']."users (username, password, mail, permissions) VALUES (?, ?, ?, ?)");
-		$insert->execute(array($username, $password, $mail, $permissions));
-		
-		return(0);
-	}
-	
-	/* Edit user system */
-	function editUser($id, $username, $password, $mail, $permissions){
-		/**
-		 *	FUNCTION SETTINGS
-		 *
-		 *	Return 0 = User have been edited
-		 *	Return 1 = User not alowed to edit accounts
-		 *	Return 2 = Variables empty
-		 *	Return 3 = User not exists
-		 *
-		 */
-		 
-		global $connect, $dbh, $user;
-		
-		/* Check if user is permissed to do this action */
-		if(!$user->permissions==1)return(1);
-		
-		/* Check if all variables are filled */
-		if(strlen($id)==0||strlen($username)==0||strlen($password)==0||strlen($mail)==0||strlen($permissions)==0)
-			return(2);
-		
-		/* Check if username exists */
-		$select = $dbh->prepare("SELECT * FROM ".$connect['ext']."users WHERE id=?");
-		$select->execute(array($id));
-		
-		if(!$select->RowCount()==1)
-			return(3);
-		
-		/* Update user */
-		$update = $dbh->prepare("UPDATE ".$connect['ext']."users SET username=?, password=?, mail=?, permissions=? WHERE id=?");
-		$update->execute(array($username, $password, $mail, $permissions, $id));
-		
-		return(0);
-	}
-	
-	function deleteUser($id){
-		/**
-		 *	FUNCTION SETTINGS
-		 *
-		 *	Return 0 = User have been edited
-		 *	Return 1 = User not alowed to edit accounts
-		 *	Return 2 = Variables empty
-		 *	Return 3 = User not exists
-		 *
-		 */
-		 
-		global $connect, $dbh, $user;
-		
-		/* Check if user is permissed to do this action */
-		if(!$user->permissions==1)return(1);
-		
-		/* Check if all variables are filled */
-		if(strlen($id)==0)
-			return(2);
-		
-		/* Check if username exists */
-		$select = $dbh->prepare("SELECT * FROM ".$connect['ext']."users WHERE id=?");
-		$select->execute(array($id));
-		
-		if(!$select->RowCount()==1)
-			return(3);
-		
-		/* Delete user */
-		$delete	= $dbh->prepare("DELETE FROM ".$connect['ext']."users WHERE id=?");
-		$delete->execute(array($id));
-		
-		return(0);
-	}
-	
-	
-	function editSettings($name, $value){
-		/**
-		 *	FUNCTION SETTINGS
-		 *
-		 *	Return 0 = User have been edited
-		 *	Return 1 = Variables empty
-		 *	Return 2 = Variable not exists
-		 *
-		 *	ANY ACCOUNT IS ALOWED TO DO THIS ACTION!
-		 *
-		 *	This action will be saved into the log!
-		 */
-		 
-		global $connect, $dbh, $user;
-		
-		/* Check if all variables are filled */
-		if(strlen($name)==0||strlen($value)==0)
-			return(1);
-		
-		/* check if setting exists */
-		$select = $dbh->prepare("SELECT * FROM ".$connect['ext']."settings WHERE name=?");
-		$select->execute(array($name));
-		
-		if(!$select->RowCount()==1)return(2);
-		
-		/* Log changes from lower rank user */
-		if(!$user->permissions==1){
-			$values = $select->fetchObject();
-			echo "[" . $values->value . "][" .$value. "]";
-			if($values->value!=$value){
-				echo "here";
-				$insert = $dbh->prepare("INSERT INTO ".$connect['ext']."log (user, userAction, returnValue) VALUES (?, ?, ?)");
-				$insert->execute(array($user->id, "Changed settings [".$name."] => '".$value."'", "UPDATE ".$connect['ext']."settings SET value='".$values->value."' WHERE name='".$name."'"));
-			}
-			
-		}
-		
-		/* Actually update */
-		$update = $dbh->prepare("UPDATE ".$connect['ext']."settings SET value=? WHERE name=?");
-		$update->execute(array($value, $name));
-		
-		return(0);
-	}
-	
 	
 	/* File size calculator */
 	function fileSizeCalc($file) {
@@ -525,7 +320,7 @@
 						<form action='admin.php?action=inlineedit&id=".$row->id."' method='post'>
 							<table style='width:100%;'>
 								<tr>
-									<td style='min-width:75px;'><input name='name' id='name".$row->id."' value='".$row->menuName."' style='width:100%;' DISABLED /></td>
+									<td style='min-width:75px;'><input name='name' pattern=\"^[a-zA-Z][a-zA-Z0-9-_\.']{1,20}$\" id='name".$row->id."' value=\"".$row->menuName."\" style='width:100%;' DISABLED /></td>
 									<td style='width:15%;min-width:80px;'>
 										<select id='frame".$row->id."' name='frame' style='width:100%;' onchange='$(\"#buttonSave".$row->id."\").fadeIn();' DISABLED>";
 										switch($row->menuTarget){
@@ -545,9 +340,9 @@
 										$display .= "
 										</select>
 									</td>
-									<td style='width:20%;min-width:120px;'><input id='url".$row->id."' name='url' type='text' value='".$row->menuHREF."' style='width:100%;' onchange='$(\"#buttonSave".$row->id."\").fadeIn();' DISABLED /></td>
+									<td style='width:20%;min-width:120px;'><input id='url".$row->id."' name='url' type='text' value='".$row->menuHREF."' style='width:100%;' pattern='([^\"]+)' DISABLED /></td>
 									<td style='width:50px;text-align:right;'>
-										<input id='position".$row->id."' name='position' type='number' value='".$row->position."' style='width:35px;' onchange='$(\"#buttonSave".$row->id."\").fadeIn();' DISABLED />
+										<input id='position".$row->id."' name='position' type='number' value='".$row->position."' style='width:50px;' onchange='$(\"#buttonSave".$row->id."\").fadeIn();' DISABLED />
 									</td>
 									<td style='width:120px;'>
 										<div style='position:Relative;top:3px;text-align:right;'>
@@ -559,46 +354,39 @@
 								</tr>
 							</table>
 						</form>
-					</div>
-					<div class='modal' id='delete_menu".$row->id."'>
-						<div class='title'>".$language['deleteMenu']."</div>
-							<form action='admin.php?action=deletemenuitem&id=".$row->id."' method='post'>
-								<div class='cont' style='text-align:center;'>
-									<div class='headImage'></div>
-									<p>".$language['deleteOne']." ".$row->menuName." ".$language['deleteTwo']."</p>
-									<table class='table ignore' style='width:90%;margin:0 auto;text-align:left;border:0;'>
-										<tr>
-											<td>".$language['name']."</td>
-											<td>
-												".$row->menuName."
-											</td>
-										</tr>
-										<tr>
-											<td>".$language['menuUrl']."</td>
-											<td>
-												".$row->menuHREF."
-											</td>
-										</tr>
-										<tr>
-											<td>".$language['menuPosition']."</td>
-											<td>
-												".$row->position."
-											</td>
-										</tr>
-										<tr>
-											<td>".$language['menuFrame']."</td>
-											<td>
-												".$row->menuTarget."
-											</td>
-										</tr>
-									</table>
-									<p style='width:90%;padding-left:15px;margin:0 auto;margin-top:20px;'>".displayMenuDrops($language['menuNoMove'], $row->id)."</p>
-								</div>
-								<input type='submit' class='submit' value='".$language['delete']."' />
-							</form>
-						<button class='button' onclick='$(\"#delete_menu".$row->id."\").fadeOut();'>".$language['cancel']."</button>
-					</div>
+					</div>";
+										
+					$deleteModalContent = "
+					    <form action='admin.php?action=deletemenuitem&id=".$row->id."' method='post'>
+						<p style='text-align:center;'>".$language['deleteOne']." ".$row->menuName." ".$language['deleteTwo']."</p>
+						<table class='table ignore' style='width:90%;margin:0 auto;text-align:left;border:0;'>
+						    <tr>
+							<td>".$language['name']."</td>
+							<td>".$row->menuName."</td>
+						    </tr>
+						    <tr>
+							<td>".$language['menuUrl']."</td>
+							<td>".$row->menuHREF."</td>
+						    </tr>
+						    <tr>
+							<td>".$language['menuPosition']."</td>
+							<td>".$row->position."</td>
+						    </tr>
+						    <tr>
+							<td>".$language['menuFrame']."</td>
+							<td>".$row->menuTarget."</td>
+						    </tr>
+						</table>
+						<p style='width:90%;padding-left:15px;margin:0 auto;margin-top:10px;'>".displayMenuDrops($language['menuNoMove'], $row->id)."</p>
+						<div class='modalFooter'>
+						    <input type='submit' class='button submit' value='".$language['delete']."' />	
+						    <button class='button' onclick='$(\"#delete_menu".$row->id."\").fadeOut();return false;'>".$language['cancel']."</button>
+						</div>
+					    </form>
 					";
+					$deleteModal = new Modal($language['deleteMenu'], 'delete_menu'.$row->id);
+					$deleteModal->setContent($deleteModalContent);
+					$display .= $deleteModal->render();
 			
 			/* Selecting child of menu item */
 			$selectChild = $dbh->prepare("SELECT * FROM ".$connect['ext']."menu WHERE child=1 AND child_of=".$row->id." ORDER BY position");
@@ -611,7 +399,7 @@
 						<form action='admin.php?action=inlineedit&id=".$child->id."' method='post'>
 							<table style='width:100%;'>
 								<tr>
-									<td style='min-width:75px;'><input value='".$child->menuName."' name='name' id='name".$child->id."' style='width:100%;' disabled/></td>
+									<td style='min-width:75px;'><input value=\"".$child->menuName."\" name='name' id='name".$child->id."' style='width:100%;' pattern=\"^[a-zA-Z][a-zA-Z0-9-_\.']{1,20}$\" disabled/></td>
 									<td style='width:15%;min-width:80px;'>
 										<select id='frame".$child->id."' name='frame' style='width:100%;' DISABLED >";
 										switch($child->menuTarget){
@@ -631,9 +419,9 @@
 										$display .= "
 										</select>
 									</td>
-									<td style='width:20%;min-width:120px;'><input id='url".$child->id."' name='url' type='text' value='".$child->menuHREF."' style='width:100%;' DISABLED /></td>
+									<td style='width:20%;min-width:120px;'><input id='url".$child->id."' name='url' type='text' value='".$child->menuHREF."' style='width:100%;' pattern='([^\"]+)' DISABLED /></td>
 									<td style='width:50px;text-align:right;'>
-										<input id='position".$child->id."' name='position' type='number' value='".$child->position."' style='width:35px;' DISABLED />
+										<input id='position".$child->id."' name='position' type='number' value='".$child->position."' style='width:50px;' DISABLED />
 									</td>
 									<td style='width:120px;'>
 										<div style='position:Relative;top:3px;text-align:right;'>
@@ -646,44 +434,39 @@
 							</table>
 						</form>
 					</div>
-					<div class='modal' id='delete_menu".$child->id."'>
-						<div class='title'>".$language['deleteMenu']."</div>
-							<form action='admin.php?action=deletemenuitem&id=".$child->id."' method='post'>
-								<div class='cont' style='text-align:center;'>
-									<div class='headImage'></div>
-									<p>".$language['deleteOne']." ".$child->menuName." ".$language['deleteTwo']."</p>
-									<table class='table ignore' style='width:90%;margin:0 auto;text-align:left;border:0;'>
-										<tr>
-											<td>".$language['name']."</td>
-											<td>
-												".$child->menuName."
-											</td>
-										</tr>
-										<tr>
-											<td>".$language['menuUrl']."</td>
-											<td>
-												".$child->menuHREF."
-											</td>
-										</tr>
-										<tr>
-											<td>".$language['menuPosition']."</td>
-											<td>
-												".$child->position."
-											</td>
-										</tr>
-										<tr>
-											<td>".$language['menuFrame']."</td>
-											<td>
-												".$child->menuTarget."
-											</td>
-										</tr>
-									</table>
-								</div>
-								<input type='submit' class='submit' value='".$language['delete']."' />
-							</form>
-						<button class='button' onclick='$(\"#delete_menu".$child->id."\").fadeOut();'>".$language['cancel']."</button>
-					</div>
 					";
+										
+										
+					$deleteModalContent = "
+					    <form action='admin.php?action=deletemenuitem&id=".$child->id."' method='post'>
+						<p style='text-align:center;'>".$language['deleteOne']." ".$child->menuName." ".$language['deleteTwo']."</p>
+						<table class='table ignore' style='width:90%;margin:0 auto;text-align:left;border:0;'>
+						    <tr>
+							<td>".$language['name']."</td>
+							<td>".$child->menuName."</td>
+						    </tr>
+						    <tr>
+							<td>".$language['menuUrl']."</td>
+							<td>".$child->menuHREF."</td>
+						    </tr>
+						    <tr>
+							<td>".$language['menuPosition']."</td>
+							<td>".$child->position."</td>
+						    </tr>
+						    <tr>
+							<td>".$language['menuFrame']."</td>
+							<td>".$child->menuTarget."</td>
+						    </tr>
+						</table>
+						<div class='modalFooter'>
+						    <input type='submit' class='button submit' value='".$language['delete']."' />	
+						    <button class='button' onclick='$(\"#delete_menu".$child->id."\").fadeOut();return false;'>".$language['cancel']."</button>
+						</div>
+					    </form>
+					";
+					$deleteModal = new Modal($language['deleteMenu'], 'delete_menu'.$child->id);
+					$deleteModal->setContent($deleteModalContent);
+					$display .= $deleteModal->render();
 			}
 		}
 		
@@ -713,25 +496,44 @@
 	
 	function uploadFileForm($directory, $identification) {
 		global $language;
-		return "
-					<div class='modal' id='upload_dialog_".$identification."'>
-						<div class='title'>".$language['file']." ".$language['uploading']."</div>
-						<form action='admin.php?action=uploadfile&root=".$directory."&return=".$_GET['action']."' method='post' enctype='multipart/form-data'>
-							<div class='cont'>
-								<div class='headImage'></div>
-								<div style='width:80%;margin:0 auto;'>
-									<label for='file' style='font-size:13px;font-weight:bold;'><p>".$language['uploadMsg']."</p></label>
-									<p>
-										<input type='file' name='file' id='file' style='width:100%;height:100px;margin-left:-10px;display:Block;' multiple>
-										<span syle='padding-top:10px;'><strong>Maximale bestandsgrootte:</strong> ".ini_get('upload_max_filesize')."</span>
-									</p>
-								</div>
-							</div>
-							<input type='submit' class='submit' name='submit' value='".$language['upload']."'>
-						</form>
-						<button class='button' onclick='$(\"#upload_dialog_".$identification."\").fadeOut();'>".$language['cancel']."</button>
-					</div>
-		";
+                
+                $uploadModalContent = "
+                    <form action='admin.php?action=uploadfile&root=".$directory."&return=".$_GET['action']."' method='post' enctype='multipart/form-data'>
+                        <div style='width:80%;margin:0 auto;'>
+                            <label for='file' style='font-size:13px;font-weight:bold;'><p>".$language['uploadMsg']."</p></label>
+                            <p>
+				<input type='file' name='file' id='file' style='width:100%;height:100px;margin-left:-10px;display:Block;' multiple>
+				<span syle='padding-top:10px;'><strong>Maximale bestandsgrootte:</strong> ".ini_get('upload_max_filesize')."</span>
+                            </p>
+			</div>
+                        <div class='modalFooter'>
+                            <input type='submit' class='button submit' name='submit' value='".$language['upload']."'>
+                            <button class='button' onclick='$(\"#upload_dialog_".$identification."\").fadeOut();return false;'>".$language['cancel']."</button>
+                        </div>
+                    </form>
+                ";
+                $uploadModal = new Modal($language['file']." ".$language['uploading'], 'upload_dialog_'.$identification);
+                $uploadModal->setContent($uploadModalContent);
+                return $uploadModal->render();
+               /* return "
+                    <div class='modal' id='upload_dialog_".$identification."'>
+			<div class='title'>".$language['file']." ".$language['uploading']."</div>
+			<form action='admin.php?action=uploadfile&root=".$directory."&return=".$_GET['action']."' method='post' enctype='multipart/form-data'>
+                            <div class='cont'>
+				<div class='headImage'></div>
+                                    <div style='width:80%;margin:0 auto;'>
+                                    <label for='file' style='font-size:13px;font-weight:bold;'><p>".$language['uploadMsg']."</p></label>
+                                    <p>
+					<input type='file' name='file' id='file' style='width:100%;height:100px;margin-left:-10px;display:Block;' multiple>
+					<span syle='padding-top:10px;'><strong>Maximale bestandsgrootte:</strong> ".ini_get('upload_max_filesize')."</span>
+                                    </p>
+				</div>
+                            </div>
+                            <input type='submit' class='submit' name='submit' value='".$language['upload']."'>
+                        </form>
+                        <button class='button' onclick='$(\"#upload_dialog_".$identification."\").fadeOut();'>".$language['cancel']."</button>
+                    </div>
+		";*/
 	}
 
 

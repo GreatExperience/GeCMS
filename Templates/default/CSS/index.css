@@ -1,62 +1,47 @@
-body {margin:0 auto;font-family:arial;font-size:11px;background:#ddd;}
-
 .header h1 {margin:0;}
 .headerTwo a {text-decoration:none !important;}
-.nav {background:#2e358b;min-height:50px;padding-top:0;color:#fff;z-index:11;}
+.nav {z-index:11;}
 .nav h1 {padding-left:15px;font-size:18px;width:250px;float:left;}
 .nav ul {float:right;margin:0;padding-left:0;position:relative;z-index:11;}
 .nav li {list-style-type:none;}
-.nav > ul > li {float:left;transition:.5s;}
-.nav > ul > li > a {color:#fff;text-decoration:none;padding-left:15px;padding-right:15px;line-height:50px;display:block;transition:.5s;font-weight:bold;}
-.nav > ul > li:hover > a {background:#007eba;color:#7bb6ee;}
-.nav > ul > li > ul {background:#0095dc;transition:.5s; opacity:0;position:absolute;visibility:hidden;min-width:175px;box-shadow:0px 0px 25px -10px #000;}
-.nav > ul > li:hover > ul {visibility:visible;opacity:1;transition:all .5s;}
-.nav > ul > li:hover > ul > li {height:15px;line-height:15px;transition:.5s;}
-.nav > ul > li > ul > li {padding:10px 20px 10px 20px;float: none; position: static; height: 0; line-height: 0; background: none; transition:.5s;border-top:1px solid #0085c4;}
-.nav > ul > li > ul > li > a {color:#fff;text-decoration:none;font-size:11px;transition:.5s;}
-.nav > ul > li > ul > li:hover a {color:#fff;}
-
+.nav ul > li {float:left;transition:.5s;}
+.nav ul > li > a {color:#fff;text-decoration:none;padding-left:15px;padding-right:15px;line-height:50px;display:block;transition:.5s;font-weight:bold;}
+.nav ul > li:hover > a {background:#007eba;color:#7bb6ee;}
+.nav ul > li > ul {background:#0095dc;transition:.5s; opacity:0;position:absolute;visibility:hidden;min-width:175px;box-shadow:0px 0px 25px -10px #000;}
+.nav ul > li:hover > ul {visibility:visible;opacity:1;transition:all .5s;}
+.nav ul > li:hover > ul > li {height:15px;line-height:15px;transition:.5s;}
+.nav ul > li > ul > li {padding:10px 20px 10px 20px;float: none; position: static; height: 0; line-height: 0; background: none; transition:.5s;border-top:1px solid #0085c4;}
+.nav ul > li > ul > li > a {color:#fff;text-decoration:none;font-size:11px;transition:.5s;}
+.nav ul > li > ul > li:hover a {color:#fff;}
+.footer .menu {display:table;width:100%;}
+.footer .menu ul {
+  list-style-type:none;
+  width:100%;
+  display:table-row;
+}
+.footer .menu .sub {float:none;}
+.footer .menu a {text-decoration:none;width:100%;float:none;}
+.footer .menu ul {display: flex;}
+.footer .menu ul li {float:left;text-align:left;font-size:14px;font-weight:Bold;}
+.footer .menu ul li div {width:100%;float:none;padding:0 10px 0 10px;}
+.footer .menu ul li ul {display:initial;}
+.footer .menu ul li ul li {float:none;font-size:12px;font-weight:normal;display:initial;}
 .layTable {border-collapse:collapse;width:100%;}
 .layTable .sub {vertical-align:top;width:250px;padding:10px;color:#fff;}
 .layTable .button {background:#777;border:0;color:#fff;}
 .layTable .main {vertical-align:top;padding:10px;max-width:700px;}
 .content .layTable {border-radius:15px;box-shadow:0px 20px 100px -35px #000;margin-top:150px;}
-.content {position:relative;z-index:10;}
+.content {background:#fff;position:relative;z-index:10;margin-top:100px;}
 .content .layTable .main {background:#fff;}
 .content .layTable .sub {background:#002d56;border-left:1px solid #000;}
 .content .layTable .sub button {background:#007eba;border:1px solid #0299e1;}
 
-.container {width:1000px;margin:0 auto;}
+.container {margin:0 auto;}
 .padding {padding:0px;}
 
 
 .layTable .main h1 {background:#2e358b;padding:7px;color:#fff;font-size:16px;padding-left:10px;}
-.bodyBG {
-    position:absolute;
-    height:500px;
-    background: url(../images/bg.png) no-repeat center center;
-    -webkit-background-size: cover;
-      -moz-background-size: cover;
-      -o-background-size: cover;
-      background-size: cover;
 
-    left:0;
-    top:0;
-    right:0;
-    z-index:-1;
-}
-
-.imgTop {background: url(../images/bg.png) center bottom;width:100%;height:300px;    -webkit-background-size: cover;
-      -moz-background-size: cover;
-      -o-background-size: cover;
-      background-size: cover;}
-
-.footer {
-    height:250px;
-    background:#007eba;
-    margin-top:-25px;
-    z-index:-1;
-}
 
 .newsHeader {width:100%;padding:0;}
 .newsImage {width:175px;}
