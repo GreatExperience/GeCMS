@@ -32,6 +32,7 @@
 				right:0;
 				bottom:0;
 				overflow:auto;
+                                overflow-x:hidden;
 				z-index:1001;
 				<?php
 					if(isset($_COOKIE['cmsAdminMenuCookie'])){

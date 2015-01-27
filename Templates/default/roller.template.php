@@ -1,6 +1,6 @@
 <?php 
    $tmpbody = array(
-       'background' => 'ff7f7f',
+       'background' => 'dbdbdb',
        'backgroundImage' => '',
        'backgroundPosition' => 'top, center',
        'backgroundRepeat' => 'no-repeat',
@@ -44,8 +44,8 @@
    );
 
    $tmpheader = array(
-       'background' => '404040',
-       'backgroundImage' => 'http://communities.zeelandnet.nl/data/fishing_jokers/upload/images/b.jpg.jpg',
+       'background' => '003c70',
+       'backgroundImage' => '',
        'backgroundPosition' => 'top, center',
        'backgroundRepeat' => 'repeat',
        'textColor' => 'ffffff',
@@ -88,7 +88,7 @@
    );
 
    $tmpmenu = array(
-       'background' => '2e358b',
+       'background' => '002D56',
        'backgroundImage' => '',
        'backgroundPosition' => 'top, left',
        'backgroundRepeat' => 'no-repeat',
@@ -132,7 +132,7 @@
    );
 
    $tmpfooter = array(
-       'background' => '9e0057',
+       'background' => '003c70',
        'backgroundImage' => '',
        'backgroundPosition' => 'top, left',
        'backgroundRepeat' => 'no-repeat',
@@ -177,25 +177,25 @@
    );
 
    $tmpcontainer = array(
-       'background' => 'b814b8',
-       'backgroundImage' => 'http://www.wallpapersstar.com/wp-content/uploads/2014/05/red-patterns_00421634.jpg',
+       'background' => 'ffffff',
+       'backgroundImage' => '',
        'backgroundPosition' => 'top, left',
        'backgroundRepeat' => 'repeat-y',
-       'textColor' => 'ffffff',
+       'textColor' => '262626',
        'textFamily' => 'arial',
-       'textSize' => '',
+       'textSize' => '12',
        'marginLeft' => '',
        'marginRight' => '',
        'marginTop' => '150',
-       'marginBottom' => '150',
-       'paddingLeft' => '50',
-       'paddingRight' => '50',
-       'paddingTop' => '50',
-       'paddingBottom' => '50',
-       'borderSize' => '1',
+       'marginBottom' => '100',
+       'paddingLeft' => '15',
+       'paddingRight' => '15',
+       'paddingTop' => '15',
+       'paddingBottom' => '15',
+       'borderSize' => '0',
        'borderType' => 'solid',
        'borderColor' => 'fc0808',
-       'borderRadius' => '80',
+       'borderRadius' => '0',
        'outlineSize' => '',
        'outlineType' => 'solid',
        'outlineColor' => '',
@@ -204,10 +204,10 @@
        'right' => '',
        'top' => '',
        'bottom' => '',
-       'width' => '1000',
+       'width' => '80',
        'minWidth' => '',
        'maxWidth' => '',
-       'widthOperator' => 'px',
+       'widthOperator' => '%',
        'minWidthOperator' => '%',
        'maxWidthOperator' => '%',
        'height' => '',

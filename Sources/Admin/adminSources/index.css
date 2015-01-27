@@ -94,7 +94,9 @@ input, select, textarea {box-sizing:border-box;border:1px solid #ccc;}
 .modal .modalFooter button, .modal .modalFooter .button {margin-top:10px;margin-left:5px;float:right;}
 .modal .modalFooter .loader {float:left;margin-left:5px;margin-top:10px;}
 .modal:before{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;content:".";font-size:0;z-index:-1;opacity:.3;filter:alpha(opacity=60)}
-.modal h3 {background:#eee;border-top:1px solid #ccc;border-bottom:1px solid #ccc;padding:5px 10px 5px 10px;margin-left:-10px;width:100%;color:#444;}
+.modal h3, .sideMenu h3 {background:#eee;border-top:1px solid #ccc;border-bottom:1px solid #ccc;padding:5px 10px 5px 10px;margin-left:-10px;width:100%;color:#444;}
+.sideMenu {overflow-y:auto;transition:.5s;}
+iframe {transition:.5s;}
 .msg{background:#49c0f0;background:-moz-linear-gradient(top,#49c0f0 0%,#2cafe3 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#49c0f0),color-stop(100%,#2cafe3));background:-webkit-linear-gradient(top,#49c0f0 0%,#2cafe3 100%);background:-o-linear-gradient(top,#49c0f0 0%,#2cafe3 100%);background:-ms-linear-gradient(top,#49c0f0 0%,#2cafe3 100%);background:linear-gradient(to bottom,#49c0f0 0%,#2cafe3 100%);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#49c0f0",endColorstr="#2cafe3",GradientType=0);border:1px solid #0089c0;border-radius:5px;color:#fff;padding:7px;margin-bottom:10px;box-shadow:inset 0 1px 0 0 #6fd4fd}
 .bar input[disabled],.bar select[disabled],.barSub input[disabled],.barSub select[disabled]{border:0;background:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;color:#000;padding-left:0}
 .bar input[disabled],.bar select[disabled]{font-weight:700}
@@ -117,7 +119,6 @@ input{background:#fff;padding:5px;padding-left:10px}
 input.submit, .blue{cursor:pointer;padding:5px;padding-left:10px;padding-right:10px;color:#fff;background:#007eba;border:1px solid #00618f;border-radius:3px;transition:.5s;box-shadow:inset 0 1px 0 0 #0299e1}
 input.submit:hover,.blue:hover{border:1px solid #005177;background:#0a71a2;box-shadow:inset 0 1px 0 0 #028bcc}
 input.submit:active,.blue:active{border:1px solid #009ae3;background:#00adff}
-input[type=number] {background-image:url(../images/icons/digit.png);background-repeat:no-repeat;background-position:3px 5px;padding-left:22px;}
 .invalid {background-color:#f48888;border:1px solid #ed5151;}
 select{background:#fff;border:1px solid #ccc;padding:5px;padding-left:10px}
 #mobileMenuToggler {display:none;position:relative;top:15px;left:15px;float:left;}

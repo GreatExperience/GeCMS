@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * TEMPLATE EDITOR
+ * @version 1.0 beta
+ * @author Merijn Geurts
+ * @License Dual license of GeCMS
+ */
 if(!$log)exit;
 
 if( ! isset($_GET['template'])){
@@ -8,6 +13,22 @@ if( ! isset($_GET['template'])){
 
 $template = $_GET['template'];
 $templateRoot = './Templates/'.$template;
+$item = array(
+    'header' => 'modalheader',
+    'menu' => 'modalmenu',
+    'footer' => 'modalfooter',
+    'body' => 'modalbody',
+    'container' => 'modalcontainer'
+);
+
+/* Footer has additional options */
+$footerAdditional = '
+    <h3>'.$language['displayMenuFooter'].'</h3>
+    <select class="menuFooter">
+        <option value="true"'.(isset($tmpfooter['menuFooter'])&&$tmpfooter['menuFooter']=='true' ? ' SELECTED' : '').'>'.$language['show'].'</option>
+        <option value="false"'.(isset($tmpfooter['menuFooter'])&&$tmpfooter['menuFooter']=='false' ? ' SELECTED' : '').'>'.$language['hide'].'</option>
+    </select>
+';
     
 if( ! file_exists($templateRoot .'/admin.template.php') ||  ! file_exists($templateRoot .'/roller.template.php')){
     Throw new Exception("Missing files or unable to edit");
@@ -21,6 +42,7 @@ echo '
         <div class="header" style="z-index:5;position:relative;">
             <button class="root">'.$language['templates'].'</button>
             <button class="root sub">'.$template.'</button>
+            <button class="button blue editMenuToggle" onclick="editMenuToggle()" style="float:right;height:40px;border-radius:0;z-index:2;padding:5px;">'.Icon::display('../template/menuSwitch.png', array('style' => 'position:relative;left:1px;')).'</button>
             <button onclick="save()" class="button blue" style="float:right;margin-right:10px;margin-top:4px;"><img src="'.$connect['url'].'/Sources/Admin/images/icons/accept.png">'.$language['save'].'</button>
             <button class="button" onclick="openModal(\'#modalheader\')" style="float:right;margin-right:10px;margin-top:4px;"><img src="'.$connect['url'].'/Sources/Admin/images/icons/bullet_wrench.png">'.$language['templateEditHeader'].'</button>
             <button class="button" onclick="openModal(\'#modalfooter\')" style="float:right;margin-right:10px;margin-top:4px;"><img src="'.$connect['url'].'/Sources/Admin/images/icons/bullet_wrench.png">'.$language['templateEditFooter'].'</button>
@@ -31,61 +53,54 @@ echo '
     </header>
     <div style="position:relative;top:-41px;height:100%;padding-top:41px;box-sizing:border-box;margin-bottom:-60px;z-index:4;">
     <div style="width:100%;position:relative;height:100%;z-index:4;">
-    <iframe id="preview" src="./index.php?editorLayout='.$template.'&footerMenu=true" style="border:0;width:100%;height:100%;position:absolute;bottom:0;top:0;"></iframe>
+    <iframe onclick="$(\'.colorpicker\').delay(100).hide();" id="preview" src="./index.php?editorLayout='.$template.'&footerMenu=true" style="border:0;width:75%;height:100%;position:absolute;bottom:0;top:0;"></iframe>
+
     <div class="framePreLoader">
         <img src="./Sources/Admin/images/loader.gif" /><h1>'.$language['templateEditor'].'</h1>
     </div>
 ';
 
-$modal['header'] = new Modal($language['templateEditHeader'], 'modalheader');
-$modal['menu'] = new Modal($language['templateEditMenu'], 'modalmenu');
-$modal['footer'] = new Modal($language['templateEditFooter'], 'modalfooter');
-$modal['body'] = new Modal($language['templateEditBody'], 'modalbody');
-$modal['container'] = new Modal($language['templateEditContainer'], 'modalcontainer');
-
-$footerAdditional = '
-    <h3>'.$language['displayMenuFooter'].'</h3>
-    <select class="menuFooter">
-        <option value="true"'.(isset($tmpfooter['menuFooter'])&&$tmpfooter['menuFooter']=='true' ? ' SELECTED' : '').'>'.$language['show'].'</option>
-        <option value="false"'.(isset($tmpfooter['menuFooter'])&&$tmpfooter['menuFooter']=='false' ? ' SELECTED' : '').'>'.$language['hide'].'</option>
-    </select>
-';
-
-foreach($modal as $key=>$value){
-    $value->setWidth('800', 'px');
-    $value->setHeight('600', 'px');
-    $value->setHeader(false);
+$count = false;
+foreach($item as $key=>$value){
+    
+    /* Select background dialog */
+    $imageModal = new Modal('', 'modalBG'.$key);
+    $imageModal->setHeader(false);
+    $imageModal->setContent('...');
+    
+    echo $imageModal->render().'
+    <div class="sideMenu" id="'.$value.'" style="display:'.($count==false ? 'true' : 'false').';width:25%;float:right;position:absolute;right:0;top:0;bottom:0;background:#fff;">
+    ';  
     if($key=='footer'){
-        $value->setContent(templateEdit::modalContent('modal'.$key, ${'tmp'.$key}, array('additional' => $footerAdditional)));
+        echo '<div>'.templateEditSide::modalContent('modal'.$key, $key, ${'tmp'.$key}, array('additional' => $footerAdditional)).'</div>';
     }else{
-        $value->setContent(templateEdit::modalContent('modal'.$key, ${'tmp'.$key}));
+        echo '<div>'.templateEditSide::modalContent('modal'.$key, $key, ${'tmp'.$key}).'</div>';
     }
-    $value->setCloseAction('modalReturnValues(\'modal'.$key.'\');');
+
+    echo '</div>';
+
+    $count = true;
 }
 
+/* Saving template with succes = show finish modal */
 $finishModal = new Modal($language['save'], 'modalSave');
 $finishModal->setContent('<p style="text-align:center;">'.$language['saveSucces'].'</p> <div class="modalFooter"><button class="blue button" onclick="$(\'#modalSave\').fadeOut();">'.$language['go'].'</button></div>');
 $finishModal->setHeight(125);
 $finishModal->setWidth(225);
 $finishModal->setHeader(false);
 
+/* Saving template with validate error = show validateModal */
 $validateModalContent = '<p>'.$language['validateError'].'</p>';
 $validateModal = new Modal($language['validateErrorTitle'], 'validateModal');
 $validateModal->setContent($validateModalContent);
 
 echo $validateModal->render()
-.$modal['header']->render()
-.$modal['menu']->render()
-.$modal['footer']->render()
-.$modal['body']->render()
-.$modal['container']->render()
 .$finishModal->render()
 .'</div></div>';
 
 ?>
 <style>
-  .framePreLoader {position:absolute;left:0;top:0;right:0;bottom:0;background:#fff;text-align:center;padding-top:calc(50% - 250px);}
-
+  .framePreLoader {position:absolute;left:0;top:0;right:0;bottom:0;z-index:100;background:#fff;text-align:center;padding-top:calc(50% - 250px);}
 </style>
 <script>
     var elementCache = {};
@@ -99,6 +114,9 @@ echo $validateModal->render()
         $('.framePreLoader').fadeOut();
         /* Do not click on links :) */
         $('#preview').contents().find('body a').attr("href","#");
+        
+        document.getElementById("preview").contentDocument.addEventListener('click', function(event) {$('.colorpicker').hide();}, false);
+        
         
         /* Template click & hover events */
         object = {0:{0:'nav', 1:'menu'},  1:{0:'footer', 1:'footer'},  2:{0:'header', 1:'header'},  3:{0:'content.container', 1:'container'}};
@@ -114,7 +132,7 @@ echo $validateModal->render()
         });
         
         <?php
-            if ($tmpfooter['menuFooter']=='false'){
+            if (isset($tmpfooter['menuFooter'])&&$tmpfooter['menuFooter']=='false'){
                 echo '$(\'#preview\').contents().find(".footer .menu").css("display", "none");';
             }
         ?>
@@ -126,24 +144,44 @@ echo $validateModal->render()
             onSubmit: function(hsb, hex, rgb, el) {
 		$(el).val(hex);
 		$(el).ColorPickerHide();
-	},
-	onBeforeShow: function () {
-		$(this).ColorPickerSetColor(this.value);
-	}
-    })
-    .bind('keyup', function(){
-            $(this).ColorPickerSetColor(this.value);
-    });
+            },
+            onBeforeShow: function () {
+                    $(this).ColorPickerSetColor(this.value);
+            }
+        })
+        .bind('keyup', function(){
+                $(this).ColorPickerSetColor(this.value);
+        });
+        <?php 
+            foreach($item as $key=>$value){ 
+                echo '
+                $("#'.$value.'").find("input, select").change(function(){refreshTemplate()});
+                $(".colorpicker_submit").click(function(){refreshTemplate()});
+                '; 
+               
+            } 
+        ?>
    });
+   
+   var menuToggle = false;
+   function editMenuToggle(){
+       if(menuToggle){
+           $('.sideMenu').css({'margin-right': '0'});
+           $('#preview').css('width', '75%');
+           menuToggle = false;
+       }else{
+           $('.sideMenu').css({'margin-right': '-25%'});
+           $('#preview').css('width', '100%');
+           menuToggle = true;
+       }
+   }
    
    /*
     * Refresh function
-    * For each dialog 'save' to see changes live
     */
-   function refreshTemplate(element){
+   function refreshTemplate(){
        
        if(validate(true)===true){
-            element.fadeOut();
             var ele = 5;
              var count = 0;
              var selector1 = '';
@@ -194,24 +232,48 @@ echo $validateModal->render()
                 }else{
                     $('#preview').contents().find(selector2 + ' .menu').css('display', 'initial');
                 }
+                
+                if(selector1=='container'){
+                    $('#preview').contents().find('.nav .container').css({
+                        'width': $('#modal'+selector1+' .width').val() + $('#modal'+selector1+' .widthOperator').val(),
+                        'minWidth': $('#modal'+selector1+' .minWidth').val() + $('#modal'+selector1+' .minWidthOperator').val(),
+                        'maxWidth': $('#modal'+selector1+' .maxWidth').val() + $('#modal'+selector1+' .maxWidthOperator').val(),
+                    });
+                }
+                
+                if(selector1=='menu'){
+                    $('#preview').contents().find('.nav > div > ul > li > a').css({
+                        'line-height': $('#modal'+selector1+' .height').val() + $('#modal'+selector1+' .heightOperator').val(),
+                    });
+                }
                 count++;
             }
             
             if($('.menuFooter').val()=='true'){
                 $('#preview').contents().find('.footer .menu').show();
-                console.log("show");
             }else{
                 $('#preview').contents().find('.footer .menu').hide();
-                console.log("hide");
             }
         }
    }
    
+   /*
+    * Opening a edit menu
+    * @param {editMenu} modal
+    * @returns {nothing}
+    */
    function openModal(modal){
-       $(modal).fadeIn();
+       <?php foreach($item as $key=>$value){ echo '$("#'.$value.'").hide();'; } ?>
+               console.log(modal);
+       $(modal).show();
        elementCache = getObjectByModal(modal);
    }
    
+   /**
+    * Used for?
+    * @param {type} modal
+    * @returns {undefined}
+    */
    function modalReturnValues(modal){
        $.each(elementCache, function(index, value) {
            console.log('$("#' + modal + ' .'+index + '").val('+value+');');
@@ -220,8 +282,8 @@ echo $validateModal->render()
    }
    
    /*
-    * Global save
-    * To save settings to template
+    * Global save To save settings to template
+    * @returns {Nothing}
     */
    function save(){
        var object = {}
@@ -257,7 +319,11 @@ echo $validateModal->render()
        }
    }
    
-   
+   /**
+   * Checks if all fields(ALL edit menu's) are filled correctly.
+   * @param {boolean} bool (not used yet)
+   * @returns {Boolean}    
+   **/
    function validate(bool){
        var stop = false;
        var count = 0;
@@ -279,6 +345,11 @@ echo $validateModal->render()
        return validated;
    }
    
+   /**
+   * Returns object with values from selected edit menu
+   * @param {modalMenu} selector
+   * @returns {getObjectByModal.templateEditorAnonym$4}    
+   **/
    function getObjectByModal(selector){
        return {
            'background': $(selector+' .bgColor').val(),
@@ -324,6 +395,17 @@ echo $validateModal->render()
            'textAlign': $(selector+' .textAlign').val(),
            'menuFooter': $(selector+' .menuFooter').val()
            };
+   }
+   
+   /**
+   * Function for textAlign buttons
+   * @param {textalignButton} element button to be turned to blue
+   * @param {textalignButton} inner buttons to be turned to gray
+   * @returns nothing    
+   **/
+   function changeTextAlign(element, inner){
+       $('#'+ inner + ' .textAlignBTN').removeClass('blue');
+       $(element).addClass('blue');
    }
    
    

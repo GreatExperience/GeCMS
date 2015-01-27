@@ -38,7 +38,7 @@ class pageModal extends Modal {
 	$this->setContent($endHTML);
 	
 	$output = $this->render();
-	$output .= '<script>document.getElementById("'.$element.'").onclick = function(){$("#pageSelect_'.$this->id.'").fadeIn();return false;}</script>';
+	$output .= '<script>$(document).ready(function(){document.getElementById("'.$element.'").onclick = function(){$("#pageSelect_'.$this->id.'").fadeIn();return false;}});</script>';
 	$this->id = $this->id + 1;
 	
 	return $output;

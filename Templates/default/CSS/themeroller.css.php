@@ -38,7 +38,12 @@
     
     $count = 0;
     
-    echo '.container {width:'.$tmpcontainer['width'].'px;}';
+    echo '.container {width:'.$tmpcontainer['width'].$tmpcontainer['widthOperator'].';}';
+    echo '.container {min-width:'.$tmpcontainer['minWidth'].$tmpcontainer['minWidthOperator'].';}';
+    echo '.container {max-width:'.$tmpcontainer['maxWidth'].$tmpcontainer['maxWidthOperator'].';}';
+    echo '.nav > div > ul > li > a {
+    '.css::render('line-height', array($tmpmenu['height']), array('operator' => $tmpmenu['heightOperator'])).'}';
+    
     while($count<5){
         
         switch($count){
